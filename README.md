@@ -15,7 +15,7 @@ My **Liked Songs** didn’t.
 Everything landed in a regular playlist, and YouTube Music offers no way to like tracks in bulk.  
 There is no **“Like all”** button, and clicking the 👍 icon hundreds of times manually wasn’t an option.
 
-So I fixed an existing script, cleaned it up, and made it behave more like a real user.
+Old Reddit script didn't work for me well, so I fixed that existing script, cleaned it up, and made it behave more like a real user.
 
 ---
 
