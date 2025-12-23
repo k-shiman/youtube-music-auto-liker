@@ -1,63 +1,146 @@
-# YouTube Music Auto Liker
+# 🎵 YouTube Music Auto Liker
 
-I recently switched from Spotify to YouTube Music using a transfer tool. The problem? All my songs ended up in a separate playlist, but my actual **"Liked Songs"** list was empty. 
+> **Automatically like all songs from a playlist in YouTube Music**  
+> A small browser script for people who migrated from Spotify and ended up with an empty *Liked Songs* section.
 
-YouTube Music doesn't have a "Like All" button, and I didn't want to manually click the thumbs-up button on 1,000+ tracks.
+---
 
-I found a script on Reddit, fixed some bugs, added support for the English/Russian UI, and added a "human-like" delay so YouTube doesn't block you.
+## Why this exists
 
-## How to use it
+I moved from Spotify to YouTube Music using a transfer tool.
 
-You don't need to install anything. This runs right in your browser console.
+Playlists transferred fine.  
+My **Liked Songs** didn’t.
 
-1.  **Open YouTube Music** in Chrome, Edge, or whatever browser you use.
-2.  **Go to the playlist** you want to transfer.
-3.  **SCROLL DOWN.** This is the most important part. Scroll all the way to the bottom of the playlist until songs stop loading. The script can only "see" the songs that are actually loaded on the screen.
-4.  **Open the Console.** Press `F12` on your keyboard (or right-click anywhere -> Inspect). Click the **Console** tab.
-5.  **Paste the code.** Copy the code from `script.js` (or below) and paste it into the console.
-    * *Note:* If the browser gives you a scary red warning about pasting code, just type `allow pasting` and hit Enter. It's a standard security measure.
-6.  **Hit Enter.**
+Everything landed in a regular playlist, and YouTube Music offers no way to like tracks in bulk.  
+There is no **“Like all”** button, and clicking the 👍 icon hundreds of times manually wasn’t an option.
 
-## The Script
+So I fixed an existing script, cleaned it up, and made it behave more like a real user.
 
-The script waits 1-2 seconds between likes to mimic human behavior. It also scrolls to the track before clicking to make sure it registers correctly.
+---
+
+## What this script does
+
+- 👍 Likes all **unliked tracks** in the current playlist  
+- 🧍 Scrolls to each track before clicking (required for YTM)
+- ⏱ Uses a **random delay (1–2 seconds)** between likes
+- 🖥 Runs directly in the **browser console**
+- 📦 No installs, no extensions
+
+---
+
+## Important limitation
+
+> ⚠️ **This matters**
+
+YouTube Music only loads part of a playlist into the page.
+
+If a track is **not loaded on screen**, the script **cannot interact with it**.  
+You *must* scroll the playlist to the bottom before running the script.
+
+---
+
+## How to use
+
+### Step 1 — Open YouTube Music
+Use Chrome, Edge, or any Chromium-based browser.
+
+### Step 2 — Open your playlist
+This should be the playlist containing the tracks you want to like.
+
+### Step 3 — Scroll to the bottom
+Scroll until new songs stop loading.
+
+> 💡 Skipping this step will cause some tracks to be missed.
+
+### Step 4 — Open DevTools
+- Press `F12`
+- or right-click → **Inspect**
+- Switch to the **Console** tab
+
+### Step 5 — Paste the script
+Copy the script below (or from `script.js`) and paste it into the console.
+
+If Chrome shows a warning, type:
+
+**allow pasting**
+
+
+
+
+and press Enter.
+
+### Step 6 — Run it
+Press **Enter** and wait.  
+The script will like songs one by one.
+
+---
+
+## Script
 
 ```javascript
 async function autoLikeSongs() {
     console.log("Starting process...");
 
-    // Finds buttons with "Like" (English) or "Нравится" (Russian) that aren't clicked yet
-    const unlikedButtons = Array.from(document.querySelectorAll('button[aria-label="Like"][aria-pressed="false"], button[aria-label="Like music"][aria-pressed="false"], button[aria-label="Нравится"][aria-pressed="false"]'));
+    const unlikedButtons = Array.from(
+        document.querySelectorAll(
+            'button[aria-label="Like"][aria-pressed="false"], ' +
+            'button[aria-label="Like music"][aria-pressed="false"]'
+        )
+    );
 
     if (unlikedButtons.length === 0) {
-        console.log('❌ No unliked songs found.');
-        console.log('Tip: Make sure you scrolled to the very bottom of the playlist first!');
+        console.log('No unliked songs found.');
+        console.log('Make sure you scrolled to the very bottom of the playlist.');
         return;
     }
 
-    console.log(`✅ Found ${unlikedButtons.length} songs to like.`);
+    console.log(`Found ${unlikedButtons.length} songs to like.`);
 
     for (let i = 0; i < unlikedButtons.length; i++) {
         const btn = unlikedButtons[i];
-        
+
         try {
-            // Scrolls to the song just like a human would
             btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
             await new Promise(r => setTimeout(r, 100));
 
             console.log(`[${i + 1}/${unlikedButtons.length}] Liking song...`);
             btn.click();
 
-            // Random delay between 1s and 2s to avoid rate limiting
-            const delay = 1000 + Math.random() * 1000; 
+            const delay = 1000 + Math.random() * 1000;
             await new Promise(resolve => setTimeout(resolve, delay));
-
         } catch (e) {
-            console.error(`Error liking song ${i + 1}:`, e);
+            console.error(`Error on song ${i + 1}`, e);
         }
     }
 
-    console.log('🎉 Finished! All loaded songs are now in your Liked Songs.');
+    console.log('Done. All loaded songs should now be liked.');
 }
 
 autoLikeSongs();
+
+```
+
+## Large playlists
+
+### For very large playlists:
+
+- Scroll to the bottom
+
+- Run the script
+
+- Scroll further
+
+- Run it again
+
+- Repeat until everything is liked.
+
+
+## Disclaimer
+
+This is an unofficial workaround.
+Use at your own risk.
+
+## Credits
+
+Based on a community script from Reddit, refined and documented from real usage.
